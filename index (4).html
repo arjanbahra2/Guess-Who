@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Guess Who</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Arial Rounded MT Bold", Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ff5785, #ff8743);
+      overflow: hidden;
+    }
+
+    .screen {
+      width: 100%;
+      height: 100vh;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* ---------- HOME ---------- */
+    #home {
+      color: white;
+    }
+
+    .logo {
+      max-width: 320px;
+      width: 80%;
+      margin-bottom: 20px;
+    }
+
+    .emoji {
+      width: 140px;
+      margin-bottom: 30px;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25));
+    }
+
+    .subtitle {
+      font-size: 18px;
+      opacity: 0.9;
+      margin-bottom: 40px;
+    }
+
+    #guessBtn {
+      font-size: 28px;
+      padding: 18px 60px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: white;
+      color: #ff5785;
+      font-weight: bold;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    #guessBtn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+    }
+
+    /* ---------- GAME ---------- */
+    #game {
+      position: relative;
+      background: black;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #celebrityImage {
+      height: 100vh;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      background: black;
+    }
+
+    /* GREEN CHECK BUTTON */
+    .check-btn {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      width: 68px;
+      height: 68px;
+      background: #2ecc71;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .check-btn::before {
+      content: "✓";
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+    }
+
+    .check-btn:hover {
+      background: #27ae60;
+      transform: scale(1.05);
+    }
+
+    /* SMALL DEVICES */
+    @media (max-width: 480px) {
+      .emoji {
+        width: 110px;
+      }
+
+      #guessBtn {
+        font-size: 24px;
+        padding: 16px 48px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HOME -->
+  <div id="home" class="screen active">
+    <img src="Chewy-removebg-preview.png" alt="Guess Who Logo" class="logo" />
+    <img src="Tropi (3).png" alt="Emoji" class="emoji" />
+    <div class="subtitle">Can you recognize who it is?</div>
+    <button id="guessBtn">Guess Who</button>
+  </div>
+
+  <!-- GAME -->
+  <div id="game" class="screen">
+    <img id="celebrityImage" src="" alt="Celebrity" />
+    <button class="check-btn" id="backBtn"></button>
+  </div>
+
+  <script>
+    const images = [
+          "https://www.usmagazine.com/wp-content/uploads/2025/12/Feature-25-Things-Ice-Spice.jpg?w=1200&quality=86&strip=all",
+    "https://media.cnn.com/api/v1/images/stellar/prod/gettyimages-2234200789.jpg?c=original&q=w_860,c_fill",
+    "https://975thefanatic.com/uploads/2025/09/GettyImages-2220176378.jpg?format=auto&optimize=high&width=1440",
+    "https://www.tvline.com/tvline/news/beast-games-mrbeast-series-order-prime-video-1235189479/mrbeast-amazon-prime.jpg",
+    "https://cdn.britannica.com/20/264620-050-34641E2A/Diljit-Dosanjh-backstage-Coachella-Indio-California-April-2023.jpg?w=400&h=300&c=crop",
+    "https://cdn.britannica.com/35/238335-050-2CB2EB8A/Lionel-Messi-Argentina-Netherlands-World-Cup-Qatar-2022.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/7/7a/LeBron_James_%2851959977144%29_%28cropped2%29.jpg",
+    "https://imageio.forbes.com/specials-images/imageserve/627bdaec36beab21cd23ad21/0x0.jpg?format=jpg&crop=1003,1002,x921,y73,safe&height=416&width=416&fit=bounds",
+    "https://images.ctfassets.net/3mv54pzvptwz/55YLwKPDnRXkqMBITRpWbC/0c2aefc04afa455c20e9ca0d209698e0/53174188191_42d4c831ae_o.jpg",
+    "https://i.abcnewsfe.com/a/c6dc7c35-a5d4-4876-b4b8-e4a7f5bb03c0/donald-trump-1-abc-gmh-251217_1766023463156_hpMain_16x9.jpg",
+    "https://cdn.britannica.com/82/262282-050-691139A6/canadian-prime-minister-justin-trudeau-attends-welcome-ceremony-day-one-of-50th-g7-summit-june-13-2024.jpg",
+    "https://static.india.com/wp-content/uploads/2022/05/WhatsApp-Image-2022-05-29-at-8.14.06-PM.jpeg",
+    "https://parade.com/.image/w_3840,q_auto:good,c_limit/MTkwNTgxMDYyNDUyNTIwODI4/santa-facts-jpg.jpg?arena_f_auto",
+    "https://www.hollywoodreporter.com/wp-content/uploads/2024/08/AdinRossGettyImages-1439617500.jpg",
+    "https://media.vanityfair.com/photos/63d16b6b14e07ec307e8d624/master/w_2560%2Cc_limit/GettyImages-1414522654.jpg",
+    "https://live-production.wcms.abc-cdn.net.au/75483705c39d5d9ec102923b789ce771?impolicy=wcms_crop_resize&cropH=562&cropW=1000&xPos=0&yPos=0&width=862&height=485",
+    "https://i.abcnewsfe.com/a/1d81b6c4-9ad3-423b-83f7-9cfd8a50ea49/taylor-swift-gty-jef-251222_1766409837463_hpMain.jpg",
+    "https://i1.sndcdn.com/avatars-C4vi0B9GTzaYDvCj-XKHNKw-t1080x1080.jpg",
+    "https://sandovallegacygroup.com/wp-content/uploads/2025/08/Screenshot-2025-08-14-at-9.19.56-AM-854x675.png",
+    "https://i.abcnewsfe.com/a/266fb182-f5eb-457e-acb6-4961ebe0f168/wirestory_6dd10d2a86243e3402d1fdbbb5fabf37_16x9.jpg?w=992",
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7QD709ejgfHYm328yp9I6sfoAIiwYvy5t2A&s",
+    "https://m.media-amazon.com/images/M/MV5BM2JhZWJmMDEtNTU5MS00YmQ3LTk1NjMtOGFlMjM2MjZlNjg5XkEyXkFqcGc@._V1_.jpg",
+    "https://hips.hearstapps.com/hmg-prod/images/olivia-rodrigo-attends-the-2023-vanity-fair-oscar-party-news-photo-1699910349.jpg",
+    "https://variety.com/wp-content/uploads/2023/10/GettyImages-1495259778-e1696875689554.jpg?w=681&h=383&crop=1",
+    "https://i.cbc.ca/ais/1.7247028,1719411530000/full/max/0/default.jpg",
+    "https://goldenglobes.com/wp-content/uploads/2023/10/ryan_reynolds_gettyimages-630281680.jpg",
+    "https://cdn.britannica.com/65/227665-050-D74A477E/American-actor-Leonardo-DiCaprio-2016.jpg",
+    "https://cdn.nba.com/manage/2021/08/michael-jordan-looks.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Conor_McGregor_2018.jpg/250px-Conor_McGregor_2018.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Mike_Tyson_2019_by_Glenn_Francis.jpg/960px-Mike_Tyson_2019_by_Glenn_Francis.jpg",
+    "https://cdn.britannica.com/48/252748-050-C514EFDB/Virat-Kohli-India-celebrates-50th-century-Cricket-November-15-2023.jpg",
+    "https://www.billboard.com/wp-content/uploads/2025/01/Kai-Cenat-jan-2024-a-billboard-1548.jpg",
+    "https://hips.hearstapps.com/hmg-prod/images/elon-musk-gettyimages-2147789844-web.jpg",
+    "https://images.csmonitor.com/csmarchives/2010/12/zuckerberg.jpg",
+    "https://fortune.com/img-assets/wp-content/uploads/2024/09/GettyImages-2153474303-e1727373782574.jpg?w=1440&q=75",
+    "https://joebiden.com/_astro/joe-biden-portrait.BQZQosgL_Z1pN1NF.webp",
+    "https://cdn.britannica.com/89/164789-050-D6B5E2C7/Barack-Obama-2012.jpg",
+    "https://media.icij.org/uploads/2025/07/Putin-GettyImages-2223945138.jpg",
+    "https://polarisproject.org/wp-content/uploads/2023/01/Andrew-Tate-blog-featured-image.png",
+    "https://www.tasteofhome.com/wp-content/uploads/2025/03/This-Is-All-Gordon-Ramsay-Eats-for-Breakfast_GettyImages-2201303812.jpg",
+    "https://imagenes.elpais.com/resizer/v2/CNW4X35ZMZEZHHCJPXANQ52XZI.jpg",
+    "https://hips.hearstapps.com/hmg-prod/images/apple-ceo-steve-jobs-speaks-during-an-apple-special-event-news-photo-1683661736.jpg",
+    "https://tt.usembassy.gov/wp-content/uploads/sites/52/2022/02/Kamala-Harris.jpg",
+    "https://media.cnn.com/api/v1/images/stellar/prod/gettyimages-2204531571.jpg?c=original",
+    "https://variety.com/wp-content/uploads/2019/03/denzel-washington-little-things.jpg?w=1000&h=563&crop=1"
+        ];
+
+    const history = [];
+    const HISTORY_LIMIT = 6;
+
+    function weightedRandomPick(list) {
+      let pick;
+      do {
+        pick = list[Math.floor(Math.random() * list.length)];
+      } while (history[history.length - 1] === pick && list.length > 1);
+      return pick;
+    }
+
+    const home = document.getElementById("home");
+    const game = document.getElementById("game");
+    const guessBtn = document.getElementById("guessBtn");
+    const imageEl = document.getElementById("celebrityImage");
+    const backBtn = document.getElementById("backBtn");
+
+    guessBtn.addEventListener("click", () => {
+      const chosen = weightedRandomPick(images);
+      imageEl.src = chosen;
+
+      history.push(chosen);
+      if (history.length > HISTORY_LIMIT) history.shift();
+
+      home.classList.remove("active");
+      game.classList.add("active");
+    });
+
+    backBtn.addEventListener("click", () => {
+      game.classList.remove("active");
+      home.classList.add("active");
+    });
+  </script>
+
+</body>
+</html>

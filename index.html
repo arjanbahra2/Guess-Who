@@ -10,15 +10,12 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: "Arial Rounded MT Bold", Arial, sans-serif;
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     html, body {
       width: 100%;
       height: 100%;
-    }
-
-    body {
       background: linear-gradient(135deg, #ff5785, #ff8743);
       overflow: hidden;
     }
@@ -31,55 +28,63 @@
       justify-content: center;
       flex-direction: column;
       text-align: center;
-      padding: 20px;
+      animation: fadeIn 0.35s ease;
     }
 
     .screen.active {
       display: flex;
     }
 
-    /* ---------- HOME ---------- */
-    #home {
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* HOME */
+    .home-card {
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 26px;
+      padding: 52px 40px;
+      max-width: 420px;
+      width: 100%;
       color: white;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+      backdrop-filter: blur(12px);
     }
 
-    .logo {
-      max-width: 320px;
-      width: 80%;
-      margin-bottom: 20px;
+    .home-title {
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
     }
 
-    .emoji {
-      width: 140px;
-      margin-bottom: 30px;
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25));
-    }
-
-    .subtitle {
+    .home-subtitle {
       font-size: 18px;
       opacity: 0.9;
-      margin-bottom: 40px;
+      margin-bottom: 36px;
+      line-height: 1.4;
     }
 
     #guessBtn {
-      font-size: 28px;
-      padding: 18px 60px;
-      border-radius: 999px;
+      width: 100%;
+      font-size: 24px;
+      padding: 18px;
+      border-radius: 18px;
       border: none;
       cursor: pointer;
-      background: white;
-      color: #ff5785;
-      font-weight: bold;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+      background: linear-gradient(135deg, #ffffff, #f0f0f0);
+      font-weight: 800;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     #guessBtn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 16px 42px rgba(0,0,0,0.4);
     }
 
-    /* ---------- GAME ---------- */
+    /* GAME */
     #game {
       position: relative;
       background: black;
@@ -92,16 +97,15 @@
       width: auto;
       max-width: 100%;
       object-fit: contain;
-      background: black;
     }
 
-    /* GREEN CHECK BUTTON */
+    /* GREEN CHECK */
     .check-btn {
       position: absolute;
       bottom: 24px;
       left: 24px;
-      width: 68px;
-      height: 68px;
+      width: 70px;
+      height: 70px;
       background: #2ecc71;
       border-radius: 50%;
       border: none;
@@ -109,32 +113,20 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-      transition: transform 0.15s ease, background 0.15s ease;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .check-btn::before {
       content: "✓";
       color: white;
-      font-size: 40px;
+      font-size: 42px;
       font-weight: bold;
     }
 
     .check-btn:hover {
-      background: #27ae60;
-      transform: scale(1.05);
-    }
-
-    /* SMALL DEVICES */
-    @media (max-width: 480px) {
-      .emoji {
-        width: 110px;
-      }
-
-      #guessBtn {
-        font-size: 24px;
-        padding: 16px 48px;
-      }
+      transform: scale(1.1);
+      box-shadow: 0 18px 48px rgba(0,0,0,0.6);
     }
   </style>
 </head>
@@ -143,10 +135,14 @@
 
   <!-- HOME -->
   <div id="home" class="screen active">
-    <img src="Chewy-removebg-preview.png" alt="Guess Who Logo" class="logo" />
-    <img src="Tropi (3).png" alt="Emoji" class="emoji" />
-    <div class="subtitle">Can you recognize who it is?</div>
-    <button id="guessBtn">Guess Who</button>
+    <div class="home-card">
+      <div class="home-title">GUESS WHO</div>
+      <div class="home-subtitle">
+        Can you recognize the person?<br />
+        Tap to reveal someone famous.
+      </div>
+      <button id="guessBtn">Start Guessing</button>
+    </div>
   </div>
 
   <!-- GAME -->
@@ -156,6 +152,9 @@
   </div>
 
   <script>
+    /*************************
+     * UNIQUE IMAGE SOURCES
+     *************************/
     const images = [
           "https://www.usmagazine.com/wp-content/uploads/2025/12/Feature-25-Things-Ice-Spice.jpg?w=1200&quality=86&strip=all",
     "https://media.cnn.com/api/v1/images/stellar/prod/gettyimages-2234200789.jpg?c=original&q=w_860,c_fill",
@@ -202,17 +201,28 @@
     "https://tt.usembassy.gov/wp-content/uploads/sites/52/2022/02/Kamala-Harris.jpg",
     "https://media.cnn.com/api/v1/images/stellar/prod/gettyimages-2204531571.jpg?c=original",
     "https://variety.com/wp-content/uploads/2019/03/denzel-washington-little-things.jpg?w=1000&h=563&crop=1"
-        ];
+    ];
 
+    // Prevents repeats
     const history = [];
     const HISTORY_LIMIT = 6;
 
-    function weightedRandomPick(list) {
-      let pick;
-      do {
-        pick = list[Math.floor(Math.random() * list.length)];
-      } while (history[history.length - 1] === pick && list.length > 1);
-      return pick;
+    function weightedRandomPick(list, history) {
+      const weights = list.map(img => {
+        const index = history.indexOf(img);
+        if (index === history.length - 1) return 0;
+        if (index !== -1) return 1 / (history.length - index + 1);
+        return 1;
+      });
+
+      const total = weights.reduce((a, b) => a + b, 0);
+      let r = Math.random() * total;
+
+      for (let i = 0; i < list.length; i++) {
+        r -= weights[i];
+        if (r <= 0) return list[i];
+      }
+      return list[0];
     }
 
     const home = document.getElementById("home");
@@ -222,7 +232,11 @@
     const backBtn = document.getElementById("backBtn");
 
     guessBtn.addEventListener("click", () => {
-      const chosen = weightedRandomPick(images);
+      const chosen =
+        images.length === 1
+          ? images[0]
+          : weightedRandomPick(images, history);
+
       imageEl.src = chosen;
 
       history.push(chosen);
